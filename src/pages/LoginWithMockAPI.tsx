@@ -10,7 +10,7 @@ interface LoginResponse {
 
 interface UserInfo {
   [key: string]: string
-  username: string
+  name: string
 }
 
 const login = async (username: string, password: string): Promise<LoginResponse | null> => {
@@ -27,22 +27,16 @@ const login = async (username: string, password: string): Promise<LoginResponse 
   }
 }
 
-const getUserInfo = async (token: string): Promise<{ username: string } | null> => {
+const getUserInfo = async (token: string): Promise<{ name: string } | null> => {
   if (token) {
-    return {username: 'blueStragglr'}
+    return {name: 'blueStragglr'}
   }
   // TODO: login 함수에서 받은 token을 이용해 사용자 정보를 받아오세요.
   return null
 }
 
 const LoginWithMockAPI = () => {
-  const [form, setForm] = useState({
-    username: '',
-    password: '',
-  });
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    username: '',
-  });
+  const [userInfo, setUserInfo] = useState<UserInfo>({name: ''});
 
   const loginSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,15 +44,12 @@ const LoginWithMockAPI = () => {
     // TODO: form 에서 username과 password를 받아 login 함수를 호출하세요.
     const formData = new FormData(event.currentTarget);
     
-    for (let [key, value] of formData.entries()) {
-      setForm(prev => ({...prev, [key]: value}));
-    };
-    const loginResult = await login(form.username, form.password);
+    const loginResult = await login(formData.get('username') as string, formData.get('password') as string);
     if (!loginResult) return;
+
     const {message, token} = loginResult;
     if (message === 'SUCCESS') {
       const obj: UserInfo|null = await getUserInfo(token);
-      console.log(obj, typeof obj);
       
       for (const key in obj) {
         if (key && obj[key]) {
